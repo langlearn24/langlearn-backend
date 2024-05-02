@@ -1,5 +1,6 @@
-const nodemailer = require("nodemailer");
-const catchAsyncErr = require("./catchAsyncErr");
+import nodemailer from"nodemailer";
+import catchAsyncErr from"./catchAsyncErr.js";
+
 const { HOST, PORT, USER, PASS } = process.env;
 
 const sendEmail = catchAsyncErr(async(options) => {
@@ -22,4 +23,4 @@ const sendEmail = catchAsyncErr(async(options) => {
   await transporter.sendMail(emailOptions);
 });
 
-module.exports = sendEmail;
+export default sendEmail;

@@ -1,6 +1,8 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
+import usersRouter from './routes/usersRouter.js';
+import globalErrorHandler from './controllers/errorController.js';
 
 const app = express();
 
@@ -17,4 +19,4 @@ app.use('*', (req, res, next) => {
 })
 app.use(globalErrorHandler);
 
-module.exports = app;
+export default app;

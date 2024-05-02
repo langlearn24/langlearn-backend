@@ -1,8 +1,8 @@
-const jwt = require("jsonwebtoken");
-const catchAsyncErr = require("../utils/catchAsyncErr");
-const User = require("../models/usersModel");
-const AppError = require("../utils/appError");
-const sendEmail = require("../utils/sendEmail");
+import jwt from "jsonwebtoken";
+import catchAsyncErr from "../utils/catchAsyncErr.js";
+import User from "../models/usersModel.js";
+import AppError from "../utils/appError.js";
+import sendEmail from "../utils/sendEmail.js";
 
 const signToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -24,7 +24,7 @@ const sendToken = (message, statusCode, res, user) => {
   });
 };
 
-exports.signup = catchAsyncErr(async (req, res, next) => {
+export const signup = catchAsyncErr(async (req, res, next) => {
   const data = {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
@@ -38,7 +38,7 @@ exports.signup = catchAsyncErr(async (req, res, next) => {
   sendToken("User created successfully", 201, res, user);
 });
 
-exports.login = catchAsyncErr(async (req, res, next) => {
+export const login = catchAsyncErr(async (req, res, next) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email }).select("+password");
   console.log(user);
@@ -58,7 +58,7 @@ exports.login = catchAsyncErr(async (req, res, next) => {
   sendToken("Successful login", 200, res, user);
 });
 
-exports.logout = catchAsyncErr(async (req, res, next) => {
+export const logout = catchAsyncErr(async (req, res, next) => {
   const { email } = req.body;
   const user = User.findOne({ email });
 
@@ -69,7 +69,7 @@ exports.logout = catchAsyncErr(async (req, res, next) => {
   });
 });
 
-exports.forgotPassword = catchAsyncErr(async (req, res, next) => {
+export const forgotPassword = catchAsyncErr(async (req, res, next) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
   if (!user)
