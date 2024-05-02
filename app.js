@@ -1,10 +1,8 @@
-const express = require('express');
-const app = express();
-const bodyParser = require('body-parser');
-const morgan = require('morgan');
-const globalErrorHandler = require('./controllers/errorController');
-const usersRouter = require('./routes/usersRouter')
+import express from 'express';
+import bodyParser from 'body-parser';
+import morgan from 'morgan';
 
+const app = express();
 
 app.use(bodyParser.json());
 app.use(morgan('dev'));

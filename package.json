@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "The NodeJS backend project of LangLearn",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "nodemon index.js"
   },
