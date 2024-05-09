@@ -3,6 +3,7 @@ import catchAsyncErr from "../utils/catchAsyncErr.js";
 import User from "../models/usersModel.js";
 import AppError from "../utils/appError.js";
 import sendEmail from "../utils/sendEmail.js";
+import crypto from "crypto";
 
 const signToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -25,16 +26,9 @@ const sendToken = (message, statusCode, res, user) => {
 };
 
 export const signup = catchAsyncErr(async (req, res, next) => {
-  const data = {
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
-  };
-
-  const user = await User.create(data);
-
+  const user = await User.create(req.body);
+  user.joinedAt = new Date(Date.now());
+  user.createdBy = user.id;
   sendToken("User created successfully", 201, res, user);
 });
 
@@ -55,6 +49,7 @@ export const login = catchAsyncErr(async (req, res, next) => {
     return next(new AppError("Invalid credentials!", 401));
   }
 
+  user.lastLoggedInAt = new Date(Date.now());
   sendToken("Successful login", 200, res, user);
 });
 
@@ -87,31 +82,58 @@ export const forgotPassword = catchAsyncErr(async (req, res, next) => {
     "host"
   )}/api/v1/user/resetPassword/${resetToken}`;
 
-  const emailTxt = `Please follow this link to reset your password: ${resetUrl}`;
+  const emailText = `Please follow this link to reset your password: ${resetUrl}`;
 
   // TODO: fix the bug that is causing sending emails to fail
-  try{
-      await sendEmail({
-        email: user.email,
-        subject: "Password reset",
-        text: emailTxt,
-      });
-    
-      res.status(200).json({
-        status: 'success',
-        message: 'Password reset email sent successfully'
-      })
-  } catch(err) {
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: "Password reset",
+      message: emailText,
+    });
+
+    res.status(200).json({
+      status: "success",
+      message: "Password reset email sent successfully",
+      token: resetToken
+    });
+  } catch (err) {
     user.passwordResetToken = undefined;
     user.passwordResetTokenExpiry = undefined;
     await user.save({ validateBeforeSave: false });
-    console.log(err)
+    console.log(err);
 
     res.status(500).json({
-        status: 'fail',
-        message: 'Error while sending the email',
-    })
+      status: "fail",
+      message: "Error while sending the email",
+    });
   }
 });
 
-// TODO: implement a resetPassword API
+
+export const resetPassword = catchAsyncErr(async (req, res, next) => {
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+
+    console.log('hashed token to compare with db: ', hashedToken)
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetTokenExpiry: { $gt: Date.now() },
+  });
+
+  if(!user){
+    return next(new AppError('Invalid or expired token', 400))
+  }
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.lastModifiedAt = new Date(Date.now());
+  user.lastModifiedBy = user.id;
+  user.passwordResetToken = undefined;
+  user.passwordResetTokenExpiry = undefined;
+
+  await user.save({validateBeforeSave: true});
+  sendToken('Password reset successfully', 200, res, user);
+});

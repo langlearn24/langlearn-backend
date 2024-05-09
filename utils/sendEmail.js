@@ -1,26 +1,29 @@
 import nodemailer from"nodemailer";
 import catchAsyncErr from"./catchAsyncErr.js";
 
-const { HOST, PORT, USER, PASS } = process.env;
-
 const sendEmail = catchAsyncErr(async(options) => {
   const transporter = nodemailer.createTransport({
-    host: HOST,
-    port: PORT,
+    host: process.env.HOST,
+    port: process.env.PORT,
     auth: {
-      user: USER,
-      pass: PASS,
+      user: process.env.EMAIL_USER,
+      pass: process.env.PASS,
     },
   });
 
   const emailOptions = {
-    from: USER,
+    from: process.env.EMAIL_USER,
     to: options.email,
     subject: options.subject,
     text: options.message,
   };
-
-  await transporter.sendMail(emailOptions);
+  try{
+    await transporter.sendMail(emailOptions);
+    console.log('Password reset email sent to', emailOptions.to)
+  } catch(err) {
+    console.log('email not sent')
+    console.log(err)
+  }
 });
 
 export default sendEmail;

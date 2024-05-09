@@ -2,8 +2,9 @@ import mongoose from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-
+import {commonFields} from './baseSchema.js'; 
 const userSchema = mongoose.Schema({
+  ...commonFields,
   firstName: {
     type: String,
     required: [true, "You must provide a first name"],
@@ -33,6 +34,27 @@ const userSchema = mongoose.Schema({
   },
   passwordResetToken: String,
   passwordResetTokenExpiry: String,
+  image: String,
+  Bio: String,
+  Role: {
+    type: String,
+    enum: ['learner', 'tutor', 'admin']
+  },
+  // TODO: implement Language and Address models
+  // languages: {
+  //   type: mongoose.Schema.ObjectId,
+  //   ref: 'Language'
+  // }, 
+  // address: {
+  //   type: mongoose.Schema.ObjectId,
+  //   ref: 'Address'
+  // },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  lastLoggedInAt: Date,
+  joinedAt: Date
 });
 
 userSchema.pre("save", async function (next) {
@@ -57,7 +79,8 @@ userSchema.methods.generatePasswordResetToken = function () {
     .createHash("sha256")
     .update(resetToken)
     .digest("hex");
-
+  console.log('hashed token saved db: ', this.passwordResetToken)
+  console.log('unhashed token returned by generation: ', resetToken)
   // expires in 10 minutes
   this.passwordResetTokenExpiry = Date.now() + 10 * 60 * 1000;
 
