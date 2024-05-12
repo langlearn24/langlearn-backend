@@ -4,6 +4,7 @@ import User from "../models/usersModel.js";
 import AppError from "../utils/appError.js";
 import sendEmail from "../utils/sendEmail.js";
 import crypto from "crypto";
+import sendSMS from "../utils/sendSMS.js";
 
 const signToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -95,7 +96,7 @@ export const forgotPassword = catchAsyncErr(async (req, res, next) => {
     res.status(200).json({
       status: "success",
       message: "Password reset email sent successfully",
-      token: resetToken
+      token: resetToken,
     });
   } catch (err) {
     user.passwordResetToken = undefined;
@@ -110,22 +111,21 @@ export const forgotPassword = catchAsyncErr(async (req, res, next) => {
   }
 });
 
-
 export const resetPassword = catchAsyncErr(async (req, res, next) => {
   const hashedToken = crypto
     .createHash("sha256")
     .update(req.params.token)
     .digest("hex");
 
-    console.log('hashed token to compare with db: ', hashedToken)
+  console.log("hashed token to compare with db: ", hashedToken);
 
   const user = await User.findOne({
     passwordResetToken: hashedToken,
     passwordResetTokenExpiry: { $gt: Date.now() },
   });
 
-  if(!user){
-    return next(new AppError('Invalid or expired token', 400))
+  if (!user) {
+    return next(new AppError("Invalid or expired token", 400));
   }
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
@@ -134,6 +134,74 @@ export const resetPassword = catchAsyncErr(async (req, res, next) => {
   user.passwordResetToken = undefined;
   user.passwordResetTokenExpiry = undefined;
 
-  await user.save({validateBeforeSave: true});
-  sendToken('Password reset successfully', 200, res, user);
+  await user.save({ validateBeforeSave: true });
+  sendToken("Password reset successfully", 200, res, user);
+});
+
+export const sendEmailVerification = catchAsyncErr(async (req, res, next) => {
+  const { email } = req.body;
+  const verificationCode = Math.floor(1000000 + Math.random() * 900000);
+  const emailText = `Here is your verification code:\n${verificationCode}`;
+  try {
+    await sendEmail({
+      email,
+      subject: "Verify your email",
+      message: emailText,
+    });
+
+    res.status(200).json({
+      status: "success",
+      message: "Email verification email sent successfully",
+      verificationCode,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "fail",
+      message: "Error while sending the email",
+    });
+  }
+});
+
+// TODO: test SMS verification API after discussing the 
+// Twilio (or any other avialable option) payment
+export const sendPhoneVerification = catchAsyncErr(async (req, res, next) => {
+  const { phone } = req.body;
+  const verificationCode = Math.floor(1000000 + Math.random() * 900000);
+  const smsText = `Here is your verification code:\n${verificationCode}`;
+  try {
+    sendSMS({
+      phone,
+      body: smsText,
+    });
+
+    res.status(200).json({
+      status: "success",
+      body: "Verification SMS sent to your number",
+      verificationCode,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "fail",
+      message: "Error while sending SMS",
+    });
+  }
+});
+
+export const verifyCode = catchAsyncErr(async (req, res, next) => {
+  const inputVerificationCode = req.body.inputVerificationCode;
+  const verificationCode = req.params.verificationCode;
+
+  if (inputVerificationCode !== verificationCode) {
+    return next(
+      new AppError(
+        "Incorrect verification code. Please double check your email!",
+        400
+      )
+    );
+  } else {
+    res.status(200).json({
+      status: "success",
+      message: "Your email has been verified!",
+    });
+  }
 });

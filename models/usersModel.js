@@ -2,7 +2,9 @@ import mongoose from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import {commonFields} from './baseSchema.js'; 
+import {commonFields} from './commonFields.js'; 
+import { phone } from "phone";
+
 const userSchema = mongoose.Schema({
   ...commonFields,
   firstName: {
@@ -13,7 +15,18 @@ const userSchema = mongoose.Schema({
   email: {
     type: String,
     validate: [validator.isEmail, "Please provide a valid email"],
-    unique: [true, "This email already exist. Please login!"],
+    unique: [true, "This email already exists. Please login!"],
+  },
+  phone: {
+    type: String,
+    validate: {
+      validator: function(phoneNumber){
+        const countryIso3 = phone(phoneNumber).countryIso3;
+          return phone(phoneNumber, {country: countryIso3}).isValid;
+      },
+      message: 'Invalid phone number'
+    },
+    unique: [true, 'This phone number already exists. Please login!']
   },
   password: {
     type: String,
