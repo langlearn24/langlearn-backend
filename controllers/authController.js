@@ -5,6 +5,8 @@ import AppError from "../utils/appError.js";
 import sendEmail from "../utils/sendEmail.js";
 import crypto from "crypto";
 import sendSMS from "../utils/sendSMS.js";
+import Learner from "../models/learnersModel.js";
+import Tutor from "../models/tutorsModel.js";
 
 const signToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -27,7 +29,16 @@ const sendToken = (message, statusCode, res, user) => {
 };
 
 export const signup = catchAsyncErr(async (req, res, next) => {
-  const user = await User.create(req.body);
+  let userType;
+  if(req.body.role === 'Learner'){
+    userType = Learner
+  }else if(req.body.role === 'Tutor'){
+    userType = Tutor
+  }else{
+    userType = User
+  }
+  const user = await userType.create(req.body);
+  // const user = await User.create(req.body);
   user.joinedAt = new Date(Date.now());
   user.createdBy = user.id;
   sendToken("User created successfully", 201, res, user);
