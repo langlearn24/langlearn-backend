@@ -6,7 +6,10 @@ export const getAll = (Model) =>
     const docs = await Model.find();
     const modelCollectionName = Model.collection.collectionName; // e.g users, posts, etc
     if (!docs || docs.length < 1) {
-      return next(new AppError(`No ${modelCollectionName} found!`, 404));
+      res.status(200).json({
+        success: 'success',
+        message: `No ${modelCollectionName} found!`
+      })
     }
     const responseObj = {
       status: "success",
@@ -42,11 +45,15 @@ export const createOne = (Model) =>
   catchAsyncErr(async (req, res, next) => {
     const data = req.body;
     const doc = await Model.create(data);
-    const singularCollectionName = Model.collection.collectionName.slice(0, -1);
-    const capitlaizedCollectionName = `${singularCollectionName
+    const modelCollectionName = Model.collection.collectionName;
+    const singularCollectionName = modelCollectionName.slice(0, -1);
+    const capitlaizedCollectionName = `${singularCollectionName // capitalized: having the 1st letter upper cased
       .slice(0, 1)
-      .toUpperCase()}${singularCollectionName.slice(1)}`; // capitalized: having the 1st letter upper cased
-
+      .toUpperCase()}${
+      modelCollectionName.endsWith("ses") // checking if the plural name of collection ends with and 'es' and exclude the 'e' from its singular form if so.
+        ? singularCollectionName.slice(1, -1)
+        : singularCollectionName.slice(1)
+    }`;
     if (!doc) {
       return next(
         AppError(
@@ -60,13 +67,21 @@ export const createOne = (Model) =>
       message: `${capitlaizedCollectionName} created successfully`,
     };
     responseObj[singularCollectionName] = doc;
-    res.status(201).json({});
+    res.status(201).json(responseObj);
   });
 
 export const deleteOne = (Model) =>
   catchAsyncErr(async (req, res, next) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
     const modelCollectionName = Model.collection.collectionName;
+    const singularCollectionName = modelCollectionName.slice(0, -1);
+    const capitlaizedCollectionName = `${singularCollectionName // capitalized: having the 1st letter upper cased
+      .slice(0, 1)
+      .toUpperCase()}${
+      modelCollectionName.endsWith("ses") // checking if the plural name of collection ends with and 'es' and exclude the 'e' from its singular form if so.
+        ? singularCollectionName.slice(1, -1)
+        : singularCollectionName.slice(1)
+    }`;
 
     if (!doc) {
       return next(
@@ -79,7 +94,7 @@ export const deleteOne = (Model) =>
 
     const responseObj = {
       status: "success",
-      message: "Your account has been deleted successfully",
+      message: `${capitlaizedCollectionName} has been deleted successfully`,
     };
     res.status(200).json(responseObj);
   });
@@ -92,6 +107,13 @@ export const updateOne = (Model) =>
     });
     const modelCollectionName = Model.collection.collectionName;
     const singularCollectionName = Model.collection.collectionName.slice(0, -1);
+    const capitlaizedCollectionName = `${singularCollectionName // capitalized: having the 1st letter upper cased
+      .slice(0, 1)
+      .toUpperCase()}${
+      modelCollectionName.endsWith("ses") // checking if the plural name of collection ends with and 'es' and exclude the 'e' from its singular form if so.
+        ? singularCollectionName.slice(1, -1)
+        : singularCollectionName.slice(1)
+    }`;
 
     if (!doc) {
       return next(
@@ -113,7 +135,7 @@ export const updateOne = (Model) =>
 
     const responseObj = {
       status: "success",
-      message: "Your account has been updated successfully",
+      message: `${capitlaizedCollectionName} has been updated successfully`,
     };
     responseObj[singularCollectionName] = doc;
     res.status(200).json(responseObj);

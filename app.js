@@ -5,6 +5,7 @@ import authRouter from './routes/authRouter.js';
 import usersRouter from './routes/usersRouter.js';
 import learnersRouter from './routes/learnersRouter.js';
 import tutorsRouter from './routes/tutorsRouter.js';
+import addressesRouter from './routes/addressesRouter.js';
 import globalErrorHandler from './controllers/errorController.js';
 
 const app = express();
@@ -16,6 +17,7 @@ app.use('/api/v1/auth/', authRouter);
 app.use('/api/v1/users/', usersRouter);
 app.use('/api/v1/learners/', learnersRouter);
 app.use('/api/v1/tutors/', tutorsRouter);
+app.use('/api/v1/addresses/', addressesRouter);
 
 app.use('*', (req, res, next) => {
     const err = new Error(`Can't find ${req.originalUrl} on the server`);

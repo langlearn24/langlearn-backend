@@ -59,10 +59,10 @@ const userSchema = new mongoose.Schema(
     //   type: mongoose.Schema.ObjectId,
     //   ref: 'Language'
     // },
-    // address: {
-    //   type: mongoose.Schema.ObjectId,
-    //   ref: 'Address'
-    // },
+    address: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Address'
+    },
     isActive: {
       type: Boolean,
       default: true,
