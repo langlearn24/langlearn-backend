@@ -7,7 +7,7 @@ import {
   forgotPassword,
   resetPassword,
   sendEmailVerification,
-  verifyEmail
+  verifyCode
 } from "../controllers/authController.js";
 import { getAllUsers } from "../controllers/usersController.js";
 const router = express.Router();
@@ -20,7 +20,7 @@ router.post("/logout", logout);
 router.post("/forgotPassword", forgotPassword);
 router.post("/resetPassword/:token", resetPassword);
 router.post("/sendEmailVerification/", sendEmailVerification);
-router.post("/verifyEmail/:verificationCode", verifyEmail);
+router.post("/verifyCode/:verificationCode", verifyCode);
 
 
 export default router;
