@@ -9,11 +9,14 @@ import {
   sendEmailVerification,
   verifyCode
 } from "../controllers/authController.js";
-import { getAllUsers } from "../controllers/usersController.js";
+import { deleteOneUser, getAllUsers, getOneUser, updateOneUser } from "../controllers/usersController.js";
 const router = express.Router();
 
+// users routes
 router.get('/', getAllUsers)
+router.route('/:id').get(getOneUser).delete(deleteOneUser).patch(updateOneUser)
 
+// auth routes
 router.post("/signup", signup);
 router.post("/login", login);
 router.post("/logout", logout);

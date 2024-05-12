@@ -85,7 +85,6 @@ export const forgotPassword = catchAsyncErr(async (req, res, next) => {
 
   const emailText = `Please follow this link to reset your password: ${resetUrl}`;
 
-  // TODO: fix the bug that is causing sending emails to fail
   try {
     await sendEmail({
       email: user.email,
