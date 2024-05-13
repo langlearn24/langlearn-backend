@@ -13,13 +13,12 @@ const handleCastErrors = (errMsg) => {
 export default (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
-//   let error = { ...err };
   const errors = err.errors && err.errors;
   const errMsgs = errors && Object.values(errors).map((el) => el.message);
 
   // handling DB duplicate key errors
   if (err.code === 11000) err = handleDuplicationError(err);
-//   handling DB cast errors and validation errors
+  //   handling DB cast errors and validation errors
   if (
     errors &&
     (errMsgs[0].endsWith('"CastError"') ||
