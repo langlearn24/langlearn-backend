@@ -7,6 +7,7 @@ import learnersRouter from './routes/learnersRouter.js';
 import tutorsRouter from './routes/tutorsRouter.js';
 import addressesRouter from './routes/addressesRouter.js';
 import globalErrorHandler from './controllers/errorController.js';
+import AppError from './utils/appError.js';
 
 const app = express();
 
@@ -20,7 +21,7 @@ app.use('/api/v1/tutors/', tutorsRouter);
 app.use('/api/v1/addresses/', addressesRouter);
 
 app.use('*', (req, res, next) => {
-    const err = new Error(`Can't find ${req.originalUrl} on the server`);
+    const err = new AppError(`Can't find ${req.originalUrl} on the server`);
     err.statusCode = 404;
     err.status = 'fail';
     next(err)

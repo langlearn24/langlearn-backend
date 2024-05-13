@@ -66,7 +66,7 @@ export const createOne = (Model) =>
       status: "success",
       message: `${capitlaizedCollectionName} created successfully`,
     };
-    responseObj[singularCollectionName] = doc;
+    responseObj[capitlaizedCollectionName] = doc;
     res.status(201).json(responseObj);
   });
 
