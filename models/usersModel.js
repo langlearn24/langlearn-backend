@@ -53,12 +53,18 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: ["learner", "tutor", "admin"],
+      required: [true, 'Creating an account without role is not allowed']
     },
-    // TODO: implement Language and Address models
-    // languages: {
-    //   type: mongoose.Schema.ObjectId,
-    //   ref: 'Language'
-    // },
+    languages: [{
+      language: {
+        type: String,
+        required: [true, 'You must have at least 1 language']
+      },
+      proficiency: {
+        type: String,
+        enum: ['Beginner', 'Intermediate', 'Fluent', 'Native']
+      }
+    }],
     address: {
       type: mongoose.Schema.ObjectId,
       ref: 'Address'
