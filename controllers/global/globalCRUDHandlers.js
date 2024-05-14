@@ -1,5 +1,5 @@
-import AppError from "../utils/appError.js";
-import catchAsyncErr from "../utils/catchAsyncErr.js";
+import AppError from "../../utils/appError.js";
+import catchAsyncErr from "../../utils/catchAsyncErr.js";
 
 export const getAll = (Model) =>
   catchAsyncErr(async (_, res, next) => {

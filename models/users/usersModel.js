@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { commonFields } from "./commonFields.js";
+import { commonFields } from "../commonFields.js";
 import { phone } from "phone";
 
 const userSchema = new mongoose.Schema(

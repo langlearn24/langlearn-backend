@@ -1,4 +1,4 @@
-import AppError from "../utils/appError.js";
+import AppError from "../../utils/appError.js";
 
 const handleDuplicationError = (err) => {
   const duplicatedField = Object.keys(err.keyValue)[0];

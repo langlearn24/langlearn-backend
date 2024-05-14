@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateLearner } from '../controllers/learnersController.js';
+import { updateLearner } from '../controllers/users/learnersController.js';
 import { createAddress, deleteAddress, getAddress, getAllAddresses, updateAddress } from '../controllers/addressesController.js';
 const router = express.Router();
 

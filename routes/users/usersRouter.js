@@ -8,10 +8,15 @@ import {
   resetPassword,
   sendEmailVerification,
   verifyCode
-} from "../controllers/authController.js";
+} from "../../controllers/users/authController.js";
+import { deleteUser, getAllUsers, getUser, updateUser } from "../../controllers/users/usersController.js";
 const router = express.Router();
 
-// auth routes
+// users routes
+router.get('/', getAllUsers)
+router.route('/:id').get(getUser).delete(deleteUser).patch(updateUser)
+
+// // auth routes
 router.post("/signup", signup);
 router.post("/login", login);
 router.post("/logout", logout);
