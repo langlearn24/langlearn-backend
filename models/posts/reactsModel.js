@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { commonFields } from "../commonFields.js";
 
-const postReactsSchema = mongoose.Schema({
+const reactsSchema = mongoose.Schema({
     ...commonFields,
     react: {
         type: String,
@@ -13,6 +13,17 @@ const postReactsSchema = mongoose.Schema({
         ref: 'Post',
         required: true
     },
+    // TODO: implement the Comment & Reply models
+    // commentID: {
+        // type: mongoose.Schema.ObjectId,
+        // ref: 'Comment',
+        // required: true
+    // },
+    // replyID: {
+        // type: mongoose.Schema.ObjectId,
+        // ref: 'Reply',
+        // required: true
+    // },
     userID: {           // the user who reacts to the post (not the author)
         type: mongoose.Schema.ObjectId,
         ref: 'User',
@@ -20,5 +31,5 @@ const postReactsSchema = mongoose.Schema({
     }
 })
 
-const PostReact = mongoose.model('Post React', postReactsSchema);
-export default PostReact;
+const React = mongoose.model('React', reactsSchema);
+export default React;

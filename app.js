@@ -7,7 +7,7 @@ import learnersRouter from './routes/users/learnersRouter.js';
 import tutorsRouter from './routes/users/tutorsRouter.js';
 import addressesRouter from './routes/addressesRouter.js';
 import postsRouter from './routes/posts/postsRouter.js';
-import postReactsRouter from './routes/posts/postReactsRouter.js';
+import reactsRouter from './routes/posts/reactsRouter.js';
 import globalErrorHandler from './controllers/global/errorController.js';
 import AppError from './utils/appError.js';
 
@@ -22,7 +22,7 @@ app.use('/api/v1/learners/', learnersRouter);
 app.use('/api/v1/tutors/', tutorsRouter);
 app.use('/api/v1/addresses/', addressesRouter);
 app.use('/api/v1/posts/', postsRouter);
-app.use('/api/v1/postReacts/', postReactsRouter);
+app.use('/api/v1/reacts/', reactsRouter);
 
 app.use('*', (req, res, next) => {
     const err = new AppError(`Can't find ${req.originalUrl} on the server`);

@@ -56,6 +56,8 @@ const userSchema = new mongoose.Schema(
       enum: ["learner", "tutor", "admin"],
       required: [true, 'Creating an account without role is not allowed']
     },
+    followers: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
+    following: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
     languages: [{
       language: {
         type: String,
