@@ -1,5 +1,5 @@
-import AppError from "../utils/appError.js";
-import catchAsyncErr from "../utils/catchAsyncErr.js";
+import AppError from "../../utils/appError.js";
+import catchAsyncErr from "../../utils/catchAsyncErr.js";
 
 export const getAll = (Model) =>
   catchAsyncErr(async (_, res, next) => {
@@ -7,9 +7,9 @@ export const getAll = (Model) =>
     const modelCollectionName = Model.collection.collectionName; // e.g users, posts, etc
     if (!docs || docs.length < 1) {
       res.status(200).json({
-        success: 'success',
-        message: `No ${modelCollectionName} found!`
-      })
+        success: "success",
+        message: `No ${modelCollectionName} found!`,
+      });
     }
     const responseObj = {
       status: "success",
@@ -46,7 +46,23 @@ export const createOne = (Model) =>
     const data = req.body;
     const doc = await Model.create(data);
     const modelCollectionName = Model.collection.collectionName;
-    const singularCollectionName = modelCollectionName.slice(0, -1);
+    let singularCollectionName;
+    /** 
+     Checking the following conditions:
+     a) if the plural name of the collection ends with 'ses', then
+     exclude the 'e' from its singular form, e.g 'addresses' will
+     be 'address' instead of 'addresse'.
+     b) if the plural ends with 'ies', replace the last 3 characters with
+     'y', e.g 'replies' will be 'reply'
+     c) else, only remove the plural 's' at the end 
+     */
+    if (modelCollectionName.endsWith("ses")) {
+      singularCollectionName = modelCollectionName.slice(0, -2);
+    } else if (modelCollectionName.endsWith("ies")) {
+      singularCollectionName = modelCollectionName.replace('ies', 'y');
+    } else {
+      singularCollectionName = modelCollectionName.slice(0, -1);
+    }
     const capitlaizedCollectionName = `${singularCollectionName // capitalized: having the 1st letter upper cased
       .slice(0, 1)
       .toUpperCase()}${
@@ -66,7 +82,7 @@ export const createOne = (Model) =>
       status: "success",
       message: `${capitlaizedCollectionName} created successfully`,
     };
-    responseObj[capitlaizedCollectionName] = doc;
+    responseObj[singularCollectionName] = doc;
     res.status(201).json(responseObj);
   });
 
@@ -74,7 +90,23 @@ export const deleteOne = (Model) =>
   catchAsyncErr(async (req, res, next) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
     const modelCollectionName = Model.collection.collectionName;
-    const singularCollectionName = modelCollectionName.slice(0, -1);
+    let singularCollectionName;
+    /** 
+     Checking the following conditions:
+     a) if the plural name of the collection ends with 'ses', then
+     exclude the 'e' from its singular form, e.g 'addresses' will
+     be 'address' instead of 'addresse'.
+     b) if the plural ends with 'ies', replace the last 3 characters with
+     'y', e.g 'replies' will be 'reply'
+     c) else, only remove the plural 's' at the end 
+     */
+     if (modelCollectionName.endsWith("ses")) {
+      singularCollectionName = modelCollectionName.slice(0, -2);
+    } else if (modelCollectionName.endsWith("ies")) {
+      singularCollectionName = modelCollectionName.replace('ies', 'y');
+    } else {
+      singularCollectionName = modelCollectionName.slice(0, -1);
+    }
     const capitlaizedCollectionName = `${singularCollectionName // capitalized: having the 1st letter upper cased
       .slice(0, 1)
       .toUpperCase()}${
@@ -106,11 +138,28 @@ export const updateOne = (Model) =>
       runValidators: true,
     });
     const modelCollectionName = Model.collection.collectionName;
-    const singularCollectionName = Model.collection.collectionName.slice(0, -1);
+    let singularCollectionName;
+    /** 
+     Checking the following conditions:
+     a) if the plural name of the collection ends with 'ses', then
+     exclude the 'e' from its singular form, e.g 'addresses' will
+     be 'address' instead of 'addresse'.
+     b) if the plural ends with 'ies', replace the last 3 characters with
+     'y', e.g 'replies' will be 'reply'
+     c) else, only remove the plural 's' at the end 
+     */
+     if (modelCollectionName.endsWith("ses")) {
+      singularCollectionName = modelCollectionName.slice(0, -2);
+    } else if (modelCollectionName.endsWith("ies")) {
+      singularCollectionName = modelCollectionName.replace('ies', 'y');
+    } else {
+      singularCollectionName = modelCollectionName.slice(0, -1);
+    }
+
     const capitlaizedCollectionName = `${singularCollectionName // capitalized: having the 1st letter upper cased
       .slice(0, 1)
       .toUpperCase()}${
-      modelCollectionName.endsWith("ses") // checking if the plural name of collection ends with and 'es' and exclude the 'e' from its singular form if so.
+      modelCollectionName.endsWith("ses")
         ? singularCollectionName.slice(1, -1)
         : singularCollectionName.slice(1)
     }`;

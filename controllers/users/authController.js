@@ -1,12 +1,12 @@
 import jwt from "jsonwebtoken";
-import catchAsyncErr from "../utils/catchAsyncErr.js";
-import User from "../models/usersModel.js";
-import AppError from "../utils/appError.js";
-import sendEmail from "../utils/sendEmail.js";
+import catchAsyncErr from "../../utils/catchAsyncErr.js";
+import User from "../../models/users/usersModel.js";
+import AppError from "../../utils/appError.js";
+import sendEmail from "../../utils/sendEmail.js";
 import crypto from "crypto";
-import sendSMS from "../utils/sendSMS.js";
-import Learner from "../models/learnersModel.js";
-import Tutor from "../models/tutorsModel.js";
+import sendSMS from "../../utils/sendSMS.js";
+import Learner from "../../models/users/learnersModel.js";
+import Tutor from "../../models/users/tutorsModel.js";
 
 const signToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {

@@ -1,4 +1,4 @@
-import AppError from "../utils/appError.js";
+import AppError from "../../utils/appError.js";
 
 const handleDuplicationError = (err) => {
   const duplicatedField = Object.keys(err.keyValue)[0];
@@ -15,7 +15,6 @@ export default (err, req, res, next) => {
   err.status = err.status || "error";
   const errors = err.errors && err.errors;
   const errMsgs = errors && Object.values(errors).map((el) => el.message);
-
   // handling DB duplicate key errors
   if (err.code === 11000) err = handleDuplicationError(err);
   //   handling DB cast errors and validation errors
