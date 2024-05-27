@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
-import Post from "../../models/posts/postsModel.js";
-import react from "../../models/posts/reactsModel.js";
+import Post from "../../models/hub/postsModel.js";
+import react from "../../models/hub/reactsModel.js";
 import AppError from "../../utils/appError.js";
 import catchAsyncErr from "../../utils/catchAsyncErr.js";
 import {
@@ -11,7 +11,7 @@ import {
   updateOne,
 } from "../global/globalCRUDHandlers.js";
 import mongoose from "mongoose";
-import React from "../../models/posts/reactsModel.js";
+import React from "../../models/hub/reactsModel.js";
 
 export const updateReact = updateOne(react);
 export const deleteReact = deleteOne(react);

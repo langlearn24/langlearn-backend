@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import { commonFields } from "../commonFields.js";
+import catchAsyncErr from "../../utils/catchAsyncErr.js";
+import globalPostUpdateMiddleware from "../globalPostUpdateMiddleware.js";
 
 const postsSchema = new mongoose.Schema({
   ...commonFields,
@@ -7,7 +9,7 @@ const postsSchema = new mongoose.Schema({
     type: String,
     required: [true, "You can't leave your post empty!"],
   },
-  image: String,
+  images: [String],
   authorID: {
     type: mongoose.Schema.ObjectId,
     ref: "User",
@@ -15,5 +17,7 @@ const postsSchema = new mongoose.Schema({
   },
   isEdited: { type: Boolean, default: false },
 });
-const Post = mongoose.model('Post', postsSchema);
+
+postsSchema.plugin(globalPostUpdateMiddleware, {modelName: 'Post'})
+const Post = mongoose.model("Post", postsSchema);
 export default Post;

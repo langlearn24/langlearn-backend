@@ -6,8 +6,8 @@ import usersRouter from './routes/users/usersRouter.js';
 import learnersRouter from './routes/users/learnersRouter.js';
 import tutorsRouter from './routes/users/tutorsRouter.js';
 import addressesRouter from './routes/addressesRouter.js';
-import postsRouter from './routes/posts/postsRouter.js';
-import reactsRouter from './routes/posts/reactsRouter.js';
+import postsRouter from './routes/hub/postsRouter.js';
+import reactsRouter from './routes/hub/reactsRouter.js';
 import globalErrorHandler from './controllers/global/errorController.js';
 import AppError from './utils/appError.js';
 

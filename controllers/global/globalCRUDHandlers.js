@@ -7,9 +7,9 @@ export const getAll = (Model) =>
     const modelCollectionName = Model.collection.collectionName; // e.g users, posts, etc
     if (!docs || docs.length < 1) {
       res.status(200).json({
-        success: 'success',
-        message: `No ${modelCollectionName} found!`
-      })
+        success: "success",
+        message: `No ${modelCollectionName} found!`,
+      });
     }
     const responseObj = {
       status: "success",
@@ -106,11 +106,17 @@ export const updateOne = (Model) =>
       runValidators: true,
     });
     const modelCollectionName = Model.collection.collectionName;
-    const singularCollectionName = Model.collection.collectionName.slice(0, -1);
+    // checking if the plural name of the collection ends with 'ses' and 
+    // exclude the 'e' from its singular form if so, e.g 'addresses' will 
+    // be 'address' instead of 'addresse'.
+    const singularCollectionName = modelCollectionName.endsWith("ses") 
+      ? modelCollectionName.slice(0, -2)
+      : modelCollectionName.slice(0, -1);
+
     const capitlaizedCollectionName = `${singularCollectionName // capitalized: having the 1st letter upper cased
       .slice(0, 1)
       .toUpperCase()}${
-      modelCollectionName.endsWith("ses") // checking if the plural name of collection ends with and 'es' and exclude the 'e' from its singular form if so.
+      modelCollectionName.endsWith("ses") 
         ? singularCollectionName.slice(1, -1)
         : singularCollectionName.slice(1)
     }`;
