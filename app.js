@@ -7,6 +7,8 @@ import learnersRouter from './routes/users/learnersRouter.js';
 import tutorsRouter from './routes/users/tutorsRouter.js';
 import addressesRouter from './routes/addressesRouter.js';
 import postsRouter from './routes/hub/postsRouter.js';
+import commentsRouter from './routes/hub/commentsRouter.js';
+import repliesRouter from './routes/hub/repliesRouter.js';
 import reactsRouter from './routes/hub/reactsRouter.js';
 import globalErrorHandler from './controllers/global/errorController.js';
 import AppError from './utils/appError.js';
@@ -22,6 +24,8 @@ app.use('/api/v1/learners/', learnersRouter);
 app.use('/api/v1/tutors/', tutorsRouter);
 app.use('/api/v1/addresses/', addressesRouter);
 app.use('/api/v1/posts/', postsRouter);
+app.use('/api/v1/comments/', commentsRouter);
+app.use('/api/v1/replies/', repliesRouter);
 app.use('/api/v1/reacts/', reactsRouter);
 
 app.use('*', (req, res, next) => {

@@ -25,8 +25,8 @@ export const createReact = catchAsyncErr(async (req, res, next) => {
   let outputReact;
 
   if (req.body.reactTo === "post") field = "postID";
-  //   else if(req.body.reactTo === 'comment')field = 'commentID';
-  //   else if(req.body.reactTo === 'reply')field = 'replyID';
+  else if (req.body.reactTo === "comment") field = "commentID";
+  else if (req.body.reactTo === "reply") field = "replyID";
   const query = {
     userID: req.body.userID,
   };
@@ -34,21 +34,16 @@ export const createReact = catchAsyncErr(async (req, res, next) => {
   const existingReact = await React.findOne(query);
   if (existingReact) {
     existingReact.type = req.body.type;
-    try {
-      await existingReact.save({ validateBeforeSave: true });
-      statusCode = 200;
-      messageOperation = "updated";
-      outputReact = existingReact;
-    } catch (err) {
-      return next(new AppError("Error updating react"));
-    }
-  } else{
+    await existingReact.save({ validateBeforeSave: true });
+    statusCode = 200;
+    messageOperation = "updated";
+    outputReact = existingReact;
+  } else {
     query["type"] = req.body.type;
     outputReact = await React.create(query);
     statusCode = 201;
     messageOperation = "created";
   }
-  
   res.status(statusCode).json({
     status: "success",
     message: `React ${messageOperation} successfully`,

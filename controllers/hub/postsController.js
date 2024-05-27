@@ -11,6 +11,7 @@ import {
   getOne,
   updateOne,
 } from "../global/globalCRUDHandlers.js";
+import Comment from "../../models/hub/commentsModel.js";
 
 export const getAllPosts = getAll(Post);
 export const getPost = getOne(Post);
@@ -109,3 +110,20 @@ export const getPostReacts = catchAsyncErr(async (req, res, next) => {
 
   res.status(200).json(resObj);
 });
+
+export const getPostComments = catchAsyncErr(async(req, res, next) => {
+  const postObjId = new ObjectId(req.params.id); 
+  const comments = await Comment.find({postID: postObjId});
+
+  let resObj = {
+    status: 'success'
+  }
+  if(comments.length === 0){
+    resObj['message'] = 'This post has no comments at the moment';
+  }else{
+    resObj['count'] = comments.length
+    resObj['comments'] = comments;
+  }
+  
+  res.status(200).json(resObj) 
+})
