@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { commonFields } from "../commonFields.js";
 import { phone } from "phone";
+import globalPostUpdateMiddleware from "../globalPostUpdateMiddleware.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -49,6 +50,7 @@ const userSchema = new mongoose.Schema(
     },
     passwordResetToken: String,
     passwordResetTokenExpiry: String,
+    passwordChangedAt: Date,
     image: String, // TODO: set up an images storage server
     bio: String,
     role: {
@@ -82,6 +84,8 @@ const userSchema = new mongoose.Schema(
   { discriminatorKey: "role", collection: "users" }
 );
 
+userSchema.plugin(globalPostUpdateMiddleware)
+
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
@@ -111,6 +115,11 @@ userSchema.methods.generatePasswordResetToken = function () {
 
   return resetToken;
 };
+
+userSchema.methods.isPasswordChangedAfterToken = function(tokenIssuanceTime){
+  const passwordChangedTime = parseInt(this.passwordChangedAt.getTime() / 1000, 10)
+  return passwordChangedTime > tokenIssuanceTime
+}
 
 const User = mongoose.model("User", userSchema);
 export default User;

@@ -13,7 +13,6 @@ import {
 } from "../global/globalCRUDHandlers.js";
 import Reply from "../../models/hub/repliesModel.js";
 
-export const getAllComments = getAll(Comment);
 export const getComment = getOne(Comment);
 export const createComment = createOne(Comment);
 export const deleteComment = deleteOne(Comment);

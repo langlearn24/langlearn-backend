@@ -7,6 +7,7 @@ import crypto from "crypto";
 import sendSMS from "../../utils/sendSMS.js";
 import Learner from "../../models/users/learnersModel.js";
 import Tutor from "../../models/users/tutorsModel.js";
+import { promisify } from "util";
 
 const signToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -30,12 +31,12 @@ const sendToken = (message, statusCode, res, user) => {
 
 export const signup = catchAsyncErr(async (req, res, next) => {
   let userType;
-  if(req.body.role === 'Learner'){
-    userType = Learner
-  }else if(req.body.role === 'Tutor'){
-    userType = Tutor
-  }else{
-    userType = User
+  if (req.body.role === "Learner") {
+    userType = Learner;
+  } else if (req.body.role === "Tutor") {
+    userType = Tutor;
+  } else {
+    userType = User;
   }
   const user = await userType.create(req.body);
   // const user = await User.create(req.body);
@@ -47,7 +48,6 @@ export const signup = catchAsyncErr(async (req, res, next) => {
 export const login = catchAsyncErr(async (req, res, next) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email }).select("+password");
-  console.log(user);
 
   if (!email || !password) {
     return next(
@@ -74,6 +74,35 @@ export const logout = catchAsyncErr(async (req, res, next) => {
     status: "success",
     message: "Successful logout",
   });
+});
+
+export const protect = catchAsyncErr(async (req, res, next) => {
+  // 1) Getting token and check if it's there
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+  if (!token) {
+    return next(
+      new AppError("You are not logged in! Please log in first,", 400)
+    );
+  }
+  // 2) Verify token
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  const user = await User.findById(decoded.id);
+  // 4) Check if user changed password after the token was issued
+  const isPasswordChanged = user.isPasswordChangedAfterToken(decoded.iat);
+  if (isPasswordChanged) {
+    return next(
+      new AppError("Your password has changed, please login again!", 401)
+    );
+  }
+  // 5) GRANT ACCESS TO PROTECTED ROUTE
+  req.user = user;
+  next();
 });
 
 export const forgotPassword = catchAsyncErr(async (req, res, next) => {
@@ -127,7 +156,6 @@ export const resetPassword = catchAsyncErr(async (req, res, next) => {
     .update(req.params.token)
     .digest("hex");
 
-
   const user = await User.findOne({
     passwordResetToken: hashedToken,
     passwordResetTokenExpiry: { $gt: Date.now() },
@@ -140,6 +168,7 @@ export const resetPassword = catchAsyncErr(async (req, res, next) => {
   user.passwordConfirm = req.body.passwordConfirm;
   user.lastModifiedAt = new Date(Date.now());
   user.lastModifiedBy = user.id;
+  user.passwordChangedAt = new Date(Date.now());
   user.passwordResetToken = undefined;
   user.passwordResetTokenExpiry = undefined;
 
@@ -171,7 +200,7 @@ export const sendEmailVerification = catchAsyncErr(async (req, res, next) => {
   }
 });
 
-// TODO: test SMS verification API after discussing the 
+// TODO: test SMS verification API after discussing the
 // Twilio (or any other avialable option) payment
 export const sendPhoneVerification = catchAsyncErr(async (req, res, next) => {
   const { phone } = req.body;

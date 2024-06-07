@@ -12,6 +12,7 @@ import repliesRouter from './routes/hub/repliesRouter.js';
 import reactsRouter from './routes/hub/reactsRouter.js';
 import globalErrorHandler from './controllers/global/errorController.js';
 import AppError from './utils/appError.js';
+import { protect } from './controllers/users/authController.js';
 
 const app = express();
 
@@ -19,14 +20,14 @@ app.use(bodyParser.json());
 app.use(morgan('dev'));
 
 app.use('/api/v1/auth/', authRouter);
-app.use('/api/v1/users/', usersRouter);
-app.use('/api/v1/learners/', learnersRouter);
-app.use('/api/v1/tutors/', tutorsRouter);
-app.use('/api/v1/addresses/', addressesRouter);
-app.use('/api/v1/posts/', postsRouter);
-app.use('/api/v1/comments/', commentsRouter);
-app.use('/api/v1/replies/', repliesRouter);
-app.use('/api/v1/reacts/', reactsRouter);
+app.use('/api/v1/users/', protect, usersRouter);
+app.use('/api/v1/learners/', protect, learnersRouter);
+app.use('/api/v1/tutors/', protect, tutorsRouter);
+app.use('/api/v1/addresses/', protect, addressesRouter);
+app.use('/api/v1/posts/', protect, postsRouter);
+app.use('/api/v1/comments/', protect, commentsRouter);
+app.use('/api/v1/replies/', protect, repliesRouter);
+app.use('/api/v1/reacts/', protect, reactsRouter);
 
 app.use('*', (req, res, next) => {
     const err = new AppError(`Can't find ${req.originalUrl} on the server`);

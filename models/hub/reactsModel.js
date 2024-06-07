@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { commonFields } from "../commonFields.js";
+import globalPostUpdateMiddleware from "../globalPostUpdateMiddleware.js";
 
 const reactsSchema = mongoose.Schema({
   ...commonFields,
@@ -26,6 +27,8 @@ const reactsSchema = mongoose.Schema({
     ref: 'Reply'
   }
 });
+
+reactsSchema.plugin(globalPostUpdateMiddleware)
 
 const React = mongoose.model("React", reactsSchema);
 export default React;

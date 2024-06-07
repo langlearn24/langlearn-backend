@@ -7,13 +7,14 @@ import {
   forgotPassword,
   resetPassword,
   sendEmailVerification,
-  verifyCode
+  verifyCode,
+  protect
 } from "../../controllers/users/authController.js";
 import { deleteUser, getAllUsers, getUser, updateUser } from "../../controllers/users/usersController.js";
 const router = express.Router();
 
 // users routes
-router.get('/', getAllUsers)
+router.get('/', protect, getAllUsers)
 router.route('/:id').get(getUser).delete(deleteUser).patch(updateUser)
 
 // // auth routes

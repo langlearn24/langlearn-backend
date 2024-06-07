@@ -1,6 +1,8 @@
 import catchAsyncErr from "../utils/catchAsyncErr.js";
 
 const globalPostUpdateMiddleware = function (schema, options) {
+  // TODO: find and fix the bug that is causing this middleware to update the 
+  // common fields even when the update query returns an error
   const modelsWithContent = ["Post", "Comment", "Reply"];
   const modelName  = options?.modelName;
 
